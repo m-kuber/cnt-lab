@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>College Projects</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background:#f4f7fb; }
+    .hero { padding:1.25rem; border-radius:10px; background:linear-gradient(180deg,#fff,#f8fbff); box-shadow:0 6px 18px rgba(20,40,80,0.05); }
+    .btn-toggle { border-radius:999px; padding:.5rem 1rem; font-weight:600; }
+    .panel { transition:opacity .18s ease, transform .18s ease; }
+    .panel.hidden { display:none !important; opacity:0; transform:translateY(6px) scale(.997); }
+    .panel.visible { display:block; opacity:1; transform:none; }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="hero mb-4 d-flex flex-column flex-md-row justify-content-between align-items-start">
+      <div>
+        <h1 class="h4 mb-1">Relevance of College Projects</h1>
+        <p class="mb-0 text-muted small">Click a button to view the importance of that project type. Only one panel is visible at a time.</p>
+      </div>
+
+      <!-- Buttons: visible clearly -->
+      <div class="mt-3 mt-md-0" role="tablist" aria-label="Project types">
+        <div class="btn-group" role="group" aria-label="Project toggle">
+          <button type="button" class="btn btn-outline-primary btn-toggle active" id="btn-edai" data-target="#edai" aria-controls="edai" aria-selected="true">EDAI</button>
+          <button type="button" class="btn btn-outline-primary btn-toggle" id="btn-dt" data-target="#dt" aria-controls="dt" aria-selected="false">DT</button>
+          <button type="button" class="btn btn-outline-primary btn-toggle" id="btn-course" data-target="#course" aria-controls="course" aria-selected="false">Course Projects</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panels -->
+    <div class="row">
+      <div class="col-12">
+        <section id="edai" class="panel card p-4 mb-3 visible" role="tabpanel" aria-labelledby="btn-edai" tabindex="0">
+          <h2 class="h6"><b>EDAI — Engineering Design & Innovation</b></h2>
+          <p>EDAI projects are semester-long team projects where students design and build an innovative solution to a real problem.</p>
+          <ul>
+            <li>Focus on innovation & real-world utility.</li>
+            <li>Teaches prototyping, testing and teamwork.</li>
+            <li>Often leads to research papers or patents.</li>
+          </ul>
+          <p class="mb-0"><strong>Why it matters:</strong> Develops ideation, project management and prototype-building skills that are valuable in industry and research.</p>
+        </section>
+
+        <section id="dt" class="panel card p-4 mb-3 hidden" role="tabpanel" aria-labelledby="btn-dt" tabindex="-1" aria-hidden="true">
+          <h2 class="h6"><b>DT — Design Thinking (Publication / Patent)</b></h2>
+          <p>DT covers publishing the research results from EDAI projects: writing papers, submitting to conferences/journals or filing patents.</p>
+          <ul>
+            <li>Teaches research communication and technical writing.</li>
+            <li>Exposes students to peer review and academic standards.</li>
+            <li>Patent option can protect IP and help entrepreneurship.</li>
+          </ul>
+          <p class="mb-0"><strong>Why it matters:</strong> Converts prototypes into documented knowledge and intellectual property, increasing visibility and impact.</p>
+        </section>
+
+        <section id="course" class="panel card p-4 mb-3 hidden" role="tabpanel" aria-labelledby="btn-course" tabindex="-1" aria-hidden="true">
+          <h2 class="h6"><b>Course Projects — Apply classroom learning</b></h2>
+          <p>Course projects are tied to individual subjects and let students practice and apply theory through short practical assignments.</p>
+          <ul>
+            <li>Reinforces classroom concepts with hands-on work.</li>
+            <li>Creates a portfolio of subject-specific mini-projects.</li>
+            <li>Lower time commitment but great for deepening understanding.</li>
+          </ul>
+          <p class="mb-0"><strong>Why it matters:</strong> Bridges theory and practice and prepares students for larger EDAI work.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    $(function() {
+      var $buttons = $('.btn-toggle');
+      var $panels = $('.panel');
+
+      function showTarget(targetSelector, $btn) {
+        // hide all panels
+        $panels.each(function() {
+          var $p = $(this);
+          if ($p.is(targetSelector)) {
+            $p.removeClass('hidden').addClass('visible').attr({'aria-hidden':'false','tabindex':'0'});
+          } else {
+            $p.removeClass('visible').addClass('hidden').attr({'aria-hidden':'true','tabindex':'-1'});
+          }
+        });
+
+        // update button active/aria
+        $buttons.removeClass('active').attr('aria-selected','false');
+        if ($btn) {
+          $btn.addClass('active').attr('aria-selected','true').focus();
+        }
+      }
+
+      // initialize — ensure correct default
+      var $initial = $buttons.filter('.active').first();
+      if ($initial.length === 0) $initial = $buttons.first();
+      showTarget($initial.data('target'), $initial);
+
+      // click handler
+      $buttons.on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        if (!$this.hasClass('active')) {
+          showTarget($this.data('target'), $this);
+        }
+      });
+
+      // keyboard: Enter/Space behave like click
+      $buttons.on('keydown', function(e) {
+        var key = e.key;
+        var idx = $buttons.index(this);
+        if (key === 'Enter' || key === ' ') {
+          e.preventDefault();
+          $(this).trigger('click');
+        } else if (key === 'ArrowRight' || key === 'ArrowDown') {
+          e.preventDefault();
+          var next = (idx + 1) % $buttons.length;
+          $buttons.eq(next).focus();
+        } else if (key === 'ArrowLeft' || key === 'ArrowUp') {
+          e.preventDefault();
+          var prev = (idx - 1 + $buttons.length) % $buttons.length;
+          $buttons.eq(prev).focus();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
